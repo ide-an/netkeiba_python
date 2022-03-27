@@ -27,5 +27,19 @@ $ python jsontocsv.py -i keiba-10y.json -o keiba-10y.csv[
 
 どのようなデータが得られるかは CSV のヘッダを参照すること。
 
+## dockerでの実行
+
+
+```bash
+docker build -t netkeiba_scrapy .
+mkdir data
+docker run --rm -it --entrypoint bash -v /`pwd`/data:/data netkeiba_scrapy
+# inside docker
+scrapy crawl netkeiba -o /data/output.json
+```
+
+**TODO: CMD記述**
+
+
 # TODO
 - データの取得開始・終了年月をオプションで指定できるようにする
