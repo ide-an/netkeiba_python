@@ -32,10 +32,32 @@ KEYS = ['order',
 class NetkeibaSpider(scrapy.Spider):
     name = "netkeiba"
     start_urls = [
-        'http://db.netkeiba.com/?pid=race_top',
+        'https://regist.netkeiba.com/account/?pid=login',
     ]
 
     def parse(self, response):
+        self.logger.info("parse")
+        if hasattr(self, 'user_id') and hasattr(self, 'user_pass') and self.user_id and self.user_pass:
+            self.logger.info("Login...")
+            return scrapy.FormRequest.from_response(
+                response,
+                formcss='.member_select_box form',
+                formdata={'login_id': self.user_id, 'pswd': self.user_pass},
+                callback=self.after_login
+            )
+        else: # ログイン情報がなければログインせずに収集する。この場合time-metricやremarkが取れない
+            self.logger.info("Not Login...")
+            return scrapy.Request('http://db.netkeiba.com/?pid=race_top', callback=self.parse_month)
+
+    def after_login(self, response):
+        self.logger.info("after_login")
+        if not response.css('.Icon_Mypage'):
+            self.logger.error("Login failed")
+            return
+        yield scrapy.Request('http://db.netkeiba.com/?pid=race_top', callback=self.parse_month)
+
+    def parse_month(self, response):
+        self.logger.info("parse_month")
         for day in response.css('.race_calendar td a::attr(href)'):
             full_url = response.urljoin(day.extract())
 

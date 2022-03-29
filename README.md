@@ -35,6 +35,9 @@ docker build -t netkeiba_scrapy .
 mkdir data
 docker run --rm -it --entrypoint bash -v /`pwd`/data:/data netkeiba_scrapy
 # inside docker
+## ログインする場合
+scrapy crawl netkeiba -a user_id="$USER_ID" -a user_pass="$USER_PASS" -o /data/output.json
+## ログインしない場合
 scrapy crawl netkeiba -o /data/output.json
 ```
 
