@@ -68,12 +68,16 @@ class NetkeibaSpider(scrapy.Spider):
             return
 
         result = {'title': None,
+                  'race_href': None,
                   'horses': [],
                   'diary': None,
                   'smalltxt': None}
 
         if response.css('title::text'):
             result['title'] = response.css('title::text').extract_first()
+
+        if response.css('.race_num li a.active::attr(href)'):
+            result['race_href'] = response.css('.race_num li a.active::attr(href)').extract_first()
 
         if response.css('diary_snap_cut span::text'):
             result['diary'] = response.css('diary_snap_cut span::text').extract_first()
@@ -86,6 +90,8 @@ class NetkeibaSpider(scrapy.Spider):
 
             for h, td in zip(KEYS, tr.css('td')):
                 result['horses'][i][h] = None
+                if h in ['name', 'jocky', 'trainer', 'owner'] and td.css('a::attr(href)'): # id収集のためhrefを保存
+                    result['horses'][i][h + '_href'] = td.css('a::attr(href)').extract_first()
 
                 if td.css('::text'):
                     text = td.css('::text').extract()
