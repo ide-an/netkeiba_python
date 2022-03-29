@@ -33,16 +33,14 @@ $ python jsontocsv.py -i keiba-10y.json -o keiba-10y.csv[
 ```bash
 docker build -t netkeiba_scrapy .
 mkdir data
-docker run --rm -it --entrypoint bash -v /`pwd`/data:/data netkeiba_scrapy
-# inside docker
-## ログインする場合
-scrapy crawl netkeiba -a user_id="$USER_ID" -a user_pass="$USER_PASS" -o /data/output.json
-## ログインしない場合
-scrapy crawl netkeiba -o /data/output.json
+# ログインしない場合
+docker run --rm -v /`pwd`/data:/data netkeiba_scrapy 'output.json'
+
+# ログインする場合
+cp login.env.exanple login.env
+# login.envを適宜編集
+docker run --rm -v /`pwd`/data:/data --env-file=login.env netkeiba_scrapy  'output.json'
 ```
-
-**TODO: CMD記述**
-
 
 # TODO
 - データの取得開始・終了年月をオプションで指定できるようにする
