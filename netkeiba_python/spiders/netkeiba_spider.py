@@ -77,7 +77,7 @@ class NetkeibaSpider(scrapy.Spider):
             if next_page is not None and date > DATA_MIN:
                 next_page = response.urljoin(next_page)
 
-                yield scrapy.Request(next_page, callback=self.parse)
+                yield scrapy.Request(next_page, callback=self.parse_month)
 
     def parse_race_list(self, response):
         for race in response.css('.race_top_data_info > dd > a::attr(href)'):
